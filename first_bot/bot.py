@@ -18,7 +18,6 @@ dp = Dispatcher()
 
 
 @dp.message()
-
 @dp.message(Command("start"))
 async def cmd_start(message: types.Message) -> None:
     await message.answer("Hello!")
