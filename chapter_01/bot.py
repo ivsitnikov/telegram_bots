@@ -6,7 +6,7 @@ from datetime import datetime
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters.command import Command
 from aiogram.enums.dice_emoji import DiceEmoji
-
+from config_reader import config
 
 # Включаем логгирование, чтобы не пропустить важные сообщения
 logging.basicConfig(level=logging.INFO)
@@ -16,7 +16,7 @@ dotenv.load_dotenv()
 # Объект бота
 token = os.getenv("BOT_TOKEN")
 logging.info(token)
-bot = Bot(token=token)
+bot = Bot(token=config.bot_token.get_secret_value())
 dp = Dispatcher()
 
 
