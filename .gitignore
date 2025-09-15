@@ -1,5 +1,10 @@
 # Created by https://www.toptal.com/developers/gitignore/api/linux,macos,windows,vim,visualstudiocode,pycharm,git,venv
 # Edit at https://www.toptal.com/developers/gitignore?templates=linux,macos,windows,vim,visualstudiocode,pycharm,git,venv
+# uv
+
+.python-version
+project.toml
+uv.lock
 
 ### Git ###
 # Created by git for backups. To disable backups in Git:
