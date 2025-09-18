@@ -260,4 +260,9 @@ $RECYCLE.BIN/
 
 __pycache__
 
+
+# UV files
+uv.lock
+pyproject.toml
+.python-version
 # End of https://www.toptal.com/developers/gitignore/api/linux,macos,windows,vim,visualstudiocode,pycharm,git,venv
