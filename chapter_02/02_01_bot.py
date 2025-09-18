@@ -5,7 +5,6 @@ from aiogram.filters.command import Command
 from aiogram.enums import ParseMode
 import logging
 from config_reader import config
-import dotenv
 
 
 logger = logging.getLogger(__name__)
