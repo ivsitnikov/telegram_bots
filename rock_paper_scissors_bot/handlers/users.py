@@ -23,7 +23,11 @@ async def process_help(message: Message):
 @user_router.message(Command(commands="generate_inline_kb"))
 async def process_generate_inline_kb(message: Message):
     # keyboard = generate_inline_keyboard(2, **BUTTON)
-    keyboard = generate_inline_keyboard(2, "but_1", "but_3", "but_7")
+    # keyboard = generate_inline_keyboard(2, "but_1", "but_3", "but_7")
+    keyboard = generate_inline_keyboard(2, last_btn="Последняя кнопка", *BUTTON)
+    # keyboard = generate_inline_keyboard(
+    #    2, last_btn="Последняя кнопка", b_1="1", b_2="2", b_3="3", b_4="4", b_5="5"
+    # )
     await message.answer(text=LEXICON_RU["/generate_inline_kb"], reply_markup=keyboard)
 
 

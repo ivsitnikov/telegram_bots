@@ -4,7 +4,9 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from lexicon import BUTTON, LEXICON_INLINE_BUTTON
 
 
-def generate_inline_keyboard(width: int, *args, **kwargs) -> InlineKeyboardMarkup:
+def generate_inline_keyboard(
+    width: int, *args: str, last_btn: str | None = None, **kwargs
+) -> InlineKeyboardMarkup:
     kb_builder = InlineKeyboardBuilder()
     buttons: list[InlineKeyboardButton] = []
     # Заполняем список кнопками из аргументов args и kwargs
@@ -24,5 +26,6 @@ def generate_inline_keyboard(width: int, *args, **kwargs) -> InlineKeyboardMarku
 
     # Распаковываем список с кнопками с аргументом width
     kb_builder.row(*buttons, width=width)
-
+    if last_btn:
+        kb_builder.row(InlineKeyboardButton(text=last_btn, callback_data="last_btn"))
     return kb_builder.as_markup()
