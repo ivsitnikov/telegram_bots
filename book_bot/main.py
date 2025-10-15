@@ -4,6 +4,7 @@ import asyncio
 from aiogram import Bot, Dispatcher
 
 from config import Config
+from keyboards import set_menu
 
 
 async def main():
@@ -14,6 +15,9 @@ async def main():
 
     bot = Bot(token=config.telegram.bot_token.get_secret_value())
     dispatcher = Dispatcher()
+
+    # Установка основного меню бота
+    await set_menu(bot=bot)
 
     # Запуск бота
     logger.info(f"Запуск бота")
