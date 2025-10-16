@@ -1,1 +1,1 @@
-from .lexicon import COMMANDS_RU
+from .lexicon import MENU_RU

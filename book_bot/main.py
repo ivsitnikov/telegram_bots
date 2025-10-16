@@ -5,6 +5,7 @@ from aiogram import Bot, Dispatcher
 
 from config import Config
 from keyboards import set_menu
+from database import db_init
 
 
 async def main():
@@ -16,6 +17,14 @@ async def main():
     bot = Bot(token=config.telegram.bot_token.get_secret_value())
     dispatcher = Dispatcher()
 
+    # Подготавливаем книгу
+    logger.info(f"Prepare book")
+    book: str = "asldkfjslF"
+    # Инициализируем "базу данных" проекта
+    db = db_init()
+
+    # Добавляем базу данных и книгу в базу данных
+    dispatcher.workflow_data.update(book=book, db=db)
     # Установка основного меню бота
     await set_menu(bot=bot)
 
