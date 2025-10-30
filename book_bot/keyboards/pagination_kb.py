@@ -1,5 +1,5 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from aiogram.utilites import InlineKeyboardBuilder
+from aiogram.utils.keyboard import InlineKeyboardBuilder
 from lexicon import LEXICON_RU
 
 
