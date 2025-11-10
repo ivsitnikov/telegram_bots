@@ -1,0 +1,71 @@
+
+# Чувствительные данные
+.env
+.env.*
+*.env
+
+# Виртуальные окружения Python
+venv/
+env/
+.venv/
+.python-version
+
+# Кэши и байт‑код Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Файлы IDE и редакторов
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-workspace
+
+# Лог‑файлы
+*.log
+logs/
+
+# Артефакты сборки
+dist/
+build/
+*.egg-info/
+.eggs/
+
+# Временные файлы
+*.tmp
+*.bak
+
+# Файлы ОС
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Пакеты зависимостей (кроме requirements.txt)
+node_modules/
+npm-debug.log*
+yarn-error.log
+package-lock.json
+
+# Локальные настройки
+.local/
+*.local
+
+# Резервные копии
+*~
+*.bak
+*.backup
+
+# Секреты в других форматах (на всякий случай)
+secrets.json
+config.json
+credentials.json
+*.pem
+*.key
+*.crt
+*.pfx
+*.p12
