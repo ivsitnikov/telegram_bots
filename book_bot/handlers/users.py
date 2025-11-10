@@ -132,4 +132,9 @@ async def process_bookmark_press(callback: CallbackQuery, book: dict, db: dict):
 # Этот хэндлер будет срабатывать при нажатии на инлайн кнопку "редактировать"
 # под списком закладок
 @user_router.callback_query(IsDelBookmarkCallbackData)
-async def process_edit_press(callback: CallbackQuery, book: dict, db: dict): ...
+async def process_edit_press(callback: CallbackQuery, book: dict, db: dict):
+    await callback.message.edit_text(text=LEXICON_RU[callback.data], 
+                                     reply_markup=create_edit_markup(db['users'][callback.from_user.id]['bookmarks'],
+                                                                     book=book,
+                                                                     ),
+                                     )

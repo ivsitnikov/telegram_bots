@@ -6,7 +6,7 @@ from aiogram import Bot, Dispatcher
 from config import Config
 from keyboards import set_menu
 from database import db_init
-
+from handlers import user_router
 
 async def main():
     logging.basicConfig(level=logging.INFO)
