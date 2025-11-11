@@ -18,8 +18,8 @@ LEXICON_RU = {
     "forward": ">>",
     "backward": "<<",
     "edit_bookmarks": "Редактировать закладки",
-    "edit_bookmarks_button": " \u0000274C Редактировать",
-    "del": "\u0000274C",
+    "edit_bookmarks_button": " ❌ Редактировать",
+    "del": "❌",
     "cancel": "Отменить",
     "no_bookmarks": "У Вас пока нет ни одной закладки.\n\nЧто бы"
     "добавить страницу в закладки - во время чтения книги"

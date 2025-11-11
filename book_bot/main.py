@@ -21,16 +21,16 @@ async def main():
 
     # Подготавливаем книгу
     logger.info(f"Prepare book")
-    book: str = prepare_book('book/book.txt') 
+    book: str = prepare_book("book/book.txt")
 
-# Инициализируем "базу данных" проекта
+    # Инициализируем "базу данных" проекта
     db = db_init()
 
     # Добавляем базу данных и книгу в базу данных
     dispatcher.workflow_data.update(book=book, db=db)
     # Установка основного меню бота
     await set_menu(bot=bot)
-    
+
     # Подключение дополнительных роутеров
     dispatcher.include_router(user_router)
     # Запуск бота

@@ -48,7 +48,7 @@ async def process_command_begining(message: Message, book: dict, db: dict):
 # Этот хэндлер будет срабатывать на команду /continue
 @user_router.message(Command(commands="continue"))
 async def process_command_continue(message: Message, book: dict, db: dict):
-    text = book[db[message.from_user.id]["page"]]
+    text = book[db["users"][message.from_user.id]["page"]]
     await message.answer(
         text=text,
         reply_markup=create_pagination_kb(
@@ -87,7 +87,7 @@ async def process_forward_press(callback: CallbackQuery, book: dict, db: dict):
             text=text,
             reply_markup=create_pagination_kb(
                 "backward",
-                f"{current_page}/len(book)",
+                f"{current_page}/{len(book)}",
                 "forward",
             ),
         )
@@ -112,14 +112,19 @@ async def process_backward_press(callback: CallbackQuery, book: dict, db: dict):
     else:
         await callback.answer()
 
+
 # Этот хэндлер будет срабатывать при нажатии на инлайн кнопку с номером/
 # колличеством страниц для добавления страницы в закладку
 @user_router.callback_query(
-        lambda x: "/" in x.data and x.data.replace("/", "").isdigit()
-        )
+    lambda x: "/" in x.data and x.data.replace("/", "").isdigit()
+)
 async def process_page_press(callback: CallbackQuery, db: dict):
-    db['users'][callback.from_user.id]['bookmarks'].add(db['users'][callback.from_user.id]['page'])
-    await callback.answer('Страница добавлена в закладки')
+    db["users"][callback.from_user.id]["bookmarks"].add(
+        db["users"][callback.from_user.id]["page"]
+    )
+    await callback.answer("Страница добавлена в закладки")
+
+
 # Этот хэндлер будет срабатывать при нажатии на кнопку из списка закладок
 @user_router.callback_query(IsDigitCallbackData())
 async def process_bookmark_press(callback: CallbackQuery, book: dict, db: dict):
@@ -135,12 +140,40 @@ async def process_bookmark_press(callback: CallbackQuery, book: dict, db: dict):
     )
 
 
-# Этот хэндлер будет срабатывать при нажатии на инлайн кнопку "редактировать"
+# Этот хэндлер будет срабатывать на нажатие на инлайн кнопку "редактировать"
 # под списком закладок
+
+
+@user_router.callback_query(F.data == "edit_bookmarks")
+async def proccess_edit_press(callback: CallbackQuery, db: dict, book: dict):
+    await callback.message.edit_text(
+        text=LEXICON_RU[callback.data],
+        reply_markup=create_edit_keyboard(
+            *db["users"][callback.from_user.id]["bookmarks"], book=book
+        ),
+    )
+
+
+# Этот хэндлер будет срабатывать при нажатии на инлайн кнопку 'отмена' под списком
+# закладок
+@user_router.callback_query(F.data == "cancel")
+async def process_cancel_press(callback: CallbackQuery):
+    await callback.message.edit_text(
+        text=LEXICON_RU["cancel_text"],
+    )
+
+
+# Этот хэндлер будет срабатывать при нажатии на инлайн кнопку "редактировать"
+# под списком закладок к удалению
 @user_router.callback_query(IsDelBookmarkCallbackData())
-async def process_edit_press(callback: CallbackQuery, book: dict, db: dict):
-    await callback.message.edit_text(text=LEXICON_RU[callback.data], 
-                                     reply_markup=create_edit_markup(db['users'][callback.from_user.id]['bookmarks'],
-                                                                     book=book,
-                                                                     ),
-                                     )
+async def process_del_bookmarks_press(callback: CallbackQuery, book: dict, db: dict):
+    db["users"][callback.from_user.id]["bookmarks"].remove(int(callback.data[:-3]))
+    if db["users"][callback.from_user.id]["bookmarks"]:
+        await callback.message.edit_text(
+            text=LEXICON_RU["/bookmarks"],
+            reply_markup=create_edit_keyboard(
+                *db["users"][callback.from_user.id]["bookmarks"], book=book
+            ),
+        )
+    else:
+        await callback.message.edit_text(text=LEXICON_RU["no_bookmarks"])
