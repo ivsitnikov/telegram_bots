@@ -1,84 +1,57 @@
-from pathlib import Path
-import re
-import json
 import logging
+import os
 
-
-logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 
-def _get_part_text(text: str, start: int, size: int) -> tuple[str, int]:
-    pattern_marks = r"[,.:;!?]"
-    right_border = start + size
-    page = text[start:right_border]
-    logger.info(f"Страница:\n{page}\n Длина страницы {len(page)}")
-    marks_from_page = list(re.finditer(pattern_marks, page))
-    logger.info(f"Знаки препинания на странице и их позиции  {marks_from_page}")
-    # Проверка кейсов
-    if marks_from_page:
-        # Каждая страница должна закончиться знаком препинания
-        end_page = marks_from_page[-1].end()
-        logger.info(f"Позиция конца страницы установлена на значении {end_page}")
-        # Знак препинания находится на границе страницы
-        if end_page == len(page):
-            logger.info("Страница закончилась знаком препинания")
-            try:
-                logger.info(
-                    f"Проверяем символ следующий за концом страницы '{text[right_border]}'"
-                )
-                assert text[right_border] in list(pattern_marks)
-                logger.info(f"Cимвол следующий за концом страницы - знак препинания")
-                end_page = marks_from_page[-2].end()
-                logger.info(f"Позиция конца страницы изменена {end_page}")
-            except AssertionError:
-                logger.info(
-                    f"Cимвол следующий за концом куска текста не знак препинания"
-                )
-            except IndexError:
-                logger.info("Достигнут конец документа")
-            try:
-                logger.info(f"Проверяем символ перед страницей")
-                assert marks_from_page[-2].end() == len(page) - 1
-                logger.info(f"Предыдущий символ - знак препинания")
-                end_page = marks_from_page[-3].end()
-                logger.info(f"Позиция конца страницы изменена {end_page}")
-            except AssertionError:
-                logger.info(f"Предпоследний символ не знак припенания")
+# Функция, возвращающая строку с текстом страницы и её размер
+def _get_part_text(text: str, start: int, page_size: int) -> tuple[str, int]:
+    end_signs = ",.!:;?"
+    max_end = min(len(text), start + page_size)
+    chunk = text[start:max_end]
 
-        page = page[0:end_page].lstrip()
-    return page, len(page)
+    last_good = -1
+    i = 0
+    while i < len(chunk):
+        if chunk[i] in end_signs:
+            while i + 1 < len(chunk) and chunk[i + 1] in end_signs:
+                i += 1
+            seq_end = i
+
+            after_seq = start + seq_end + 1
+            if (
+                after_seq == len(text)
+                or text[after_seq].isspace()
+                or text[after_seq].isalpha()
+            ):
+                last_good = seq_end
+        i += 1
+
+    if last_good != -1:
+        page_text = chunk[: last_good + 1]
+    else:
+        page_text = chunk
+
+    return page_text, len(page_text)
 
 
+# Функция, формирующая словарь книги
 def prepare_book(path: str, page_size: int = 1050) -> dict[int, str]:
-    book_dict: dict[int, str] = {}
+    try:
+        with open(file=os.path.normpath(path), mode="r", encoding="utf-8") as file:
+            text = file.read()
+    except Exception as e:
+        logger.error("Error reading a book: %s", e)
+        raise e
 
-    with open(path, "r", encoding="utf-8") as book:
-        text = book.read()
-        text_size = len(text)
-        start, page_number = 0, 1
-        offset = 0
-        while text_size > start:
-            page_text, offset = _get_part_text(text, start, page_size)
-            book_dict.setdefault(page_number, page_text.lstrip())
-            page_number += 1
-            start += offset
-    return book_dict
+    book = {}
+    start, page_number = 0, 1
 
+    while start < len(text):
+        page_text, actual_page_size = _get_part_text(text, start, page_size)
+        start += actual_page_size
+        book[page_number] = page_text.strip()
+        page_number += 1
 
-if __name__ == "__main__":
-    text = """Пошлость собственной мечты была так заметна, что Таня понимала: даже мечтать и горевать ей 
-    приходится закачанными в голову штампами, и по­другому не может быть, потому что через все женски
-    е головы на планете давно проложена ржавая узкоколейка, и эти мысли — вовсе не ее собственные надежды
-    , а просто грохочущий у нее в мозгу коммерческий товарняк.
-Словно бы на самом деле думала и мечтала не она, а в пустом осеннем сквере горела на стене
-дома огромная панель, показывая равнодушным жирным воронам рекламу бюджетной косметики."""
+    return book
 
-    # print(*_get_part_text(text, 0, 100), sep="\n")
-    logger.debug({Path.cwd()})
-    path = Path.cwd() / "book" / "Bredberi_Marsianskie-hroniki.txt"
-    # path = Path.cwd() / "book" / "test.txt"
-    logger.debug({path})
-    logger.debug(
-        json.dumps(prepare_book(path), indent=2, sort_keys=True, ensure_ascii=False)
-    )
